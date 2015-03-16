@@ -1,29 +1,31 @@
 <?php
 
+require __DIR__.'/../config/config.php';
+
 use Silex\Application;
 use Silex\Provider\TwigServiceProvider;
+use Silex\Provider\UrlGeneratorServiceProvider;
+use Silex\Provider\DoctrineServiceProvider;
+
+use DistObsNet\Models\NodeManager;
+use DistObsNet\Models\SettingsManager;
+//use DistObsNet\Models\DataManagerInterface;
+
 //use Silex\Provider\RoutingServiceProvider;
 //use Silex\Provider\ValidatorServiceProvider;
 //use Silex\Provider\ServiceControllerServiceProvider;
 //use Silex\Provider\HttpFragmentServiceProvider;
-use DistObsNet\Key;
-
 
 $app = new Application();
+
 //$app->register(new RoutingServiceProvider());
 //$app->register(new ValidatorServiceProvider());
 //$app->register(new ServiceControllerServiceProvider());
-
-$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
-    'db.options' => array(
-        'driver' => 'pdo_sqlite',
-        'path' => __DIR__.'/../var/db.db',
-    ),
-));
-
 //$app->register(new HttpFragmentServiceProvider());
-
+$app->register(new DoctrineServiceProvider(), $config['db']);
+$app->register(new UrlGeneratorServiceProvider());
 $app->register(new TwigServiceProvider());
+
 $app['twig'] = $app->extend('twig', function($twig, $app) {
     // add custom globals, filters, tags, ...
     $twig->addFunction(new \Twig_SimpleFunction('asset', function ($asset) use ($app) {
@@ -33,8 +35,24 @@ $app['twig'] = $app->extend('twig', function($twig, $app) {
     return $twig;
 });
 
-$app['key'] = $app->share(function() {
-    return new Key();
+$app['keyManager'] = $app->share(function() {
+    return new \DistObsNet\Key\KeyManagerDummy();
+});
+
+$app['key'] = $app->share(function($app) {
+    return new \DistObsNet\Key\KeyDummy($app['keyManager']);
+});
+
+$app['publicKey'] = function() {
+    return new \DistObsNet\Key\PublicKeyDummy();
+};
+
+$app['node'] = $app->share(function($app) {
+    return new NodeManager($app['db']);
+});
+
+$app['settings'] = $app->share(function($app) {
+    return new SettingsManager($app['db']);
 });
 
 return $app;

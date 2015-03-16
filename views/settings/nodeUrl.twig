@@ -1,0 +1,15 @@
+<div style="padding-top: 16px;">
+    My Node url:<b>
+        {% if nodeUrl %}
+            {{ nodeUrl }}
+        {% else %}
+            *undefined*
+        {% endif %}
+    </b>
+        
+    <br>
+    <form action="/settings/nodeUrl" method="post">
+        <input type="text" name="nodeUrl" value="{{ alterNodeUrl }}">        
+        <input type="submit" value="Save">
+    </form>
+</div>

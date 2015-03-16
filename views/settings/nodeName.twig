@@ -1,0 +1,15 @@
+<div style="padding-top: 16px;">
+    My Node name:<b>
+        {% if nodeName %}
+            {{ nodeName }}
+        {% else %}
+            *undefined*
+        {% endif %}
+    </b>
+
+    <br>
+    <form action="/settings/nodeName" method="post">
+        <input type="text" name="nodeName" value="{{ nodeName }}">
+        <input type="submit" value="Save">
+    </form>
+</div>

@@ -1,27 +1,57 @@
 <?php
+//http://stackoverflow.com/questions/7143514/how-to-encrypt-a-large-file-in-openssl-using-public-key
 
-namespace DistObsNet;
+namespace DistObsNet\Key;
 
-class Key
+class Key implements KeyInterface
 {
-    public function __construct() 
+    private $pkey = null;
+    private $privateKey = null;
+    private $publicKey = null;
+    private $crc32 = null;
+
+    public function __construct(KeyManagerInterface $keyManager)
     {
-        echo "Object KEY initialization<br>\n";
+        $this->pkey = $keyManager->getPkey();
     }
-    
-    public function isInit()
+
+    public function publicKey()
     {
-        return (bool)$this->getPublicKey();
+        if (null === $this->publicKey) {
+            if (! $details = openssl_pkey_get_details($this->pkey))
+                throw new KeyException("Can't extract public key from pkey resource");
+            $this->publicKey = $details["key"];
+        }
+
+        return $this->publicKey;
     }
-    
-    protected function getPublicKey()
+
+    public function crc32()
     {
-        return 'keykeykey';
+        if (null === $this->crc32) {
+            $this->crc32 = crc32($this->publicKey());
+        }
+
+        return $this->crc32;
     }
-    
-    protected function getPrivateKey()
+
+    public function decrypt($data)
     {
-        
+        $decrypted = '';
+        if (! openssl_private_decrypt($data, $decrypted, $this->privateKey()))
+            throw new KeyException("Can't decrypt data");
+
+        return $decrypted;
     }
-    
+
+    private function privateKey()
+    {
+        if (null === $this->privateKey) {
+            if (! openssl_pkey_export($this->pkey, $this->privateKey))
+                throw new KeyException("Can't extract private key from pkey resource");
+        }
+
+        return $this->privateKey;
+    }
+
 }
