@@ -1,6 +1,6 @@
 <?php
 
-namespace DistObsNet\Controllers;
+namespace controllers;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,8 +16,8 @@ class Settings
         try {
             $data['isDbCreated'] = $app['settings']->load('isDbCreated');
 
-            if ($nodeName = $app['settings']->load('nodeName'))
-                $data['nodeName'] = $nodeName->value;
+            if ($data['nodeName'] = $app['settings']->load('nodeName'))
+                $data['nodeName'] = $data['nodeName']->value;
 
             if ($data['nodeUrl'] = $app['settings']->load('nodeUrl')) {
                 $data['nodeUrl'] = $data['nodeUrl']->value;
@@ -29,7 +29,7 @@ class Settings
                             . $request->server->get('HTTP_HOST')
                             . $request->server->get('REQUEST_URI'),
                         0,
-                        -8 //cut '/settings' word
+                        -8 //cut '/settings' suffix
                 );
             }
 
@@ -63,7 +63,6 @@ class Settings
 
             if (! $model = $app['settings']->load('nodeUrl')) {
                 $model = $app['settings']
-                    ->create()
                     ->setCode('nodeUrl');
             }
             $model->setValue($nodeUrl);
@@ -82,11 +81,10 @@ class Settings
         if ($nodeName = $request->request->get('nodeName')) {
 
             if (! $model = $app['settings']->load('nodeName')) {
-                $model = $app['settings']
-                    ->create()
-                    ->setCode('nodeName');
+                $model = $app['settings'];
+                $model->code = 'nodeName';
             }
-            $model->setValue($nodeName);
+            $model->value = $nodeName;
 
             if ($model->save())
                 $app['monolog']->addInfo('New node name was saved');

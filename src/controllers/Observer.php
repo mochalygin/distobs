@@ -1,6 +1,6 @@
 <?php
 
-namespace DistObsNet\Controllers;
+namespace controllers;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;

@@ -14,17 +14,17 @@ $app->get('/', function() use ($app) {
 ->bind('homepage');
 
 /* Settings */
-$app->get('/settings', 'DistObsNet\\Controllers\\Settings::index')
+$app->get('/settings', 'controllers\\Settings::index')
     ->bind('settings');
-$app->get('/settings/initKeys', 'DistObsNet\\Controllers\\Settings::initKeys')
+$app->get('/settings/initKeys', 'controllers\\Settings::initKeys')
     ->bind('settings.initKeys');
-$app->get('/settings/installDb', 'DistObsNet\\Controllers\\Settings::installDb')
+$app->get('/settings/installDb', 'controllers\\Settings::installDb')
     ->bind('settings.installDb');
-$app->post('/settings/nodeUrl', 'DistObsNet\\Controllers\\Settings::nodeUrl');
-$app->post('/settings/nodeName', 'DistObsNet\\Controllers\\Settings::nodeName');
+$app->post('/settings/nodeUrl', 'controllers\\Settings::nodeUrl');
+$app->post('/settings/nodeName', 'controllers\\Settings::nodeName');
 
 /*   */
-$app->get('/observer', 'DistObsNet\\Controllers\\Observer::index');
+$app->get('/observer', 'controllers\\Observer::index');
 
 /* Errors */
 $app->error(function(\Exception $e, $code) use ($app) {

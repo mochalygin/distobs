@@ -71,10 +71,10 @@ class CreateDBCommand extends ContainerAwareCommand
         //записываем флаг готовности БД
         $container = $this->getContainer();
         try {
-            $settings = $container['settings']->create();
-            $settings->code = 'isDbCreated';
-            $settings->value = true;
-            $container['settings']->save($settings);
+            $model = $container['settings'];
+            $model->code = 'isDbCreated';
+            $model->value = true;
+            $model->save();
 
             $this->monolog()->addInfo('Ok');
         } catch (\Exception $e) {
@@ -92,7 +92,9 @@ class CreateDBCommand extends ContainerAwareCommand
         $table->addColumn('public_key', 'string', array('unique' => true, 'length' => 32));
         $table->addColumn('url', 'string', array('length' => 255));
         $table->addColumn('name', 'string', array('length' => 255));
-        $table->addColumn('ts', 'datetime');
+
+        $table->addColumn('st', 'boolean');
+        $table->addColumn('ts', 'integer');
 
         $table->setPrimaryKey(array('id'));
         $table->addUniqueIndex(array('public_key'));
@@ -110,8 +112,9 @@ class CreateDBCommand extends ContainerAwareCommand
         $table->addColumn('hash', 'string', array('unique' => true, 'length' => 32));
 
         $table->addColumn('hands', 'smallint');
-        $table->addColumn('status', 'boolean');
-        $table->addColumn('ts', 'datetime');
+
+        $table->addColumn('st', 'boolean');
+        $table->addColumn('ts', 'integer');
 
         $table->setPrimaryKey(array('id'));
         $table->addUniqueIndex(array('hash'));
@@ -124,6 +127,10 @@ class CreateDBCommand extends ContainerAwareCommand
         $table->addColumn('code', 'string', array('length' => 255));
         $table->addColumn('value', 'string', array('length' => 255));
 
+        $table->addColumn('st', 'boolean');
+        $table->addColumn('ts', 'integer');
+
+
         $table->setPrimaryKey(array('code'));
     }
 
@@ -133,6 +140,10 @@ class CreateDBCommand extends ContainerAwareCommand
 
         $table->addColumn('id', 'integer');
         $table->addColumn('name', 'string', array('length' => 255));
+
+        $table->addColumn('st', 'boolean');
+        $table->addColumn('ts', 'integer');
+
 
         $table->setPrimaryKey(array('id'));
         $table->addUniqueIndex(array('name'));
@@ -145,6 +156,9 @@ class CreateDBCommand extends ContainerAwareCommand
         $table->addColumn('data_id', 'integer');
         $table->addColumn('tag_id', 'integer');
 
+        $table->addColumn('st', 'boolean');
+        $table->addColumn('ts', 'integer');
+
         $table->setPrimaryKey(array('data_id', 'tag_id'));
     }
 
@@ -153,7 +167,7 @@ class CreateDBCommand extends ContainerAwareCommand
         $table = $this->createTable('observer');
 
         $table->addColumn('node_id', 'integer');
-        $table->addColumn('ts', 'integer');
+        $table->addColumn('date_sync', 'integer');
 
         $table->setPrimaryKey(array('node_id'));
     }
@@ -163,7 +177,6 @@ class CreateDBCommand extends ContainerAwareCommand
         $table = $this->createTable('publisher');
 
         $table->addColumn('node_id', 'integer');
-        $table->addColumn('ts', 'integer');
 
         $table->setPrimaryKey(array('node_id'));
     }

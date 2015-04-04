@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__.'/../config/config.php';
+require __DIR__ . '/../config/config.php';
 
 use Silex\Application;
 use Silex\Provider\TwigServiceProvider;
@@ -48,11 +48,17 @@ $app['publicKey'] = function() {
 };
 
 $app['node'] = $app->share(function($app) {
-    return new NodeManager($app['db']);
+    return new NodeManager($app);
 });
 
-$app['settings'] = $app->share(function($app) {
-    return new SettingsManager($app['db']);
+$app['settingsManager'] = $app->share(function($app) {
+    return new SettingsManager($app);
 });
+
+$app['settings'] = function($app) {
+    return $app['settingsManager']->create();
+};
+
+$app['publisher'] = null;
 
 return $app;

@@ -69,6 +69,16 @@ class Model implements ModelInterface
         return (bool)($this->manager && $this->manager->save($this));
     }
 
+    public function load($pk)
+    {
+        return $this->manager->load($pk, $this);
+    }
+
+    public function hasAttribute($name)
+    {
+        return in_array($name, $this->attributesNames());
+    }
+
 }
 
 class ModelException extends \Exception {}

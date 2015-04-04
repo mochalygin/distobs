@@ -4,11 +4,13 @@ namespace DistObsNet\Models;
 
 class ModelManager implements ModelManagerInterface
 {
-    protected $db = null;
+    protected $db;
+    protected $publisher;
 
-    public function __construct(\Doctrine\DBAL\Connection $db)
+    public function __construct(\Silex\Application $app)
     {
-        $this->db = $db;
+        $this->db = $app['db'];
+        $this->publisher = $app['publisher'];
     }
 
     public function className()
@@ -22,7 +24,7 @@ class ModelManager implements ModelManagerInterface
         return new $class($this);
     }
 
-    public function load($pkValue)
+    public function load($pkValue, Model $model)
     {
         $sql = 'SELECT * FROM ' . $this->tableName() . ' WHERE ' . $this->primaryKeyName() . ' = ?';
         $res = $this->db->fetchAssoc($sql, array($pkValue));
@@ -30,9 +32,9 @@ class ModelManager implements ModelManagerInterface
         if (! $res)
             return false;
 
-        $model = $this->create();
         foreach ($res as $key=>$value) {
-            $model->$key = $value;
+            if ( $model->hasAttribute($key) )
+                $model->$key = $value;
         }
         $model->isNew = false;
 
@@ -58,12 +60,16 @@ class ModelManager implements ModelManagerInterface
         if (! ($model instanceof $class))
             throw new ModelManagerException('Wrong model type for this manager');
 
-        $model->isNew = false;
+        $attributes = $model->attributes();
+        if ( $this->isPublishable() )
+            $attributes += array('st' => 1, 'ts' => time());
 
-        if ($this->db->insert($this->tableName(), $model->attributes())) {
+        if ($this->db->insert($this->tableName(), $attributes)) {
+            $model->isNew = false;
             if ($this->db->lastInsertId())
                 $model->{$this->primaryKeyName()} = $this->db->lastInsertId();
 
+            $this->publisherNotify();
             return true;
         }
 
@@ -78,7 +84,35 @@ class ModelManager implements ModelManagerInterface
         if (! ($model instanceof $class))
             throw new ModelManagerException('Wrong model type for this manager');
 
-        return $this->db->update($this->tableName(), $model->attributes(), array($primaryKey => $model->{$primaryKey}));
+        $attributes = $model->attributes();
+        if ( $this->isPublishable() )
+            $attributes += array('st' => 1, 'ts' => time());
+
+        $res = $this->db->update(
+                $this->tableName(),
+                $attributes,
+                array($primaryKey => $model->{$primaryKey})
+        );
+
+        if ($res)
+            $this->publisherNotify();
+
+        return $res;
+    }
+
+    /**
+     * @param boolean $res
+     */
+    protected function publisherNotify()
+    {
+        if ( $this->isPublishable() ) {
+//        $this->publisher->notify();
+        }
+    }
+
+    protected function isPublishable()
+    {
+        return true;
     }
 }
 
