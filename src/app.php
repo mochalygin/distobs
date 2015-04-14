@@ -9,12 +9,16 @@ use Silex\Provider\DoctrineServiceProvider;
 
 use DistObsNet\Models\NodeManager;
 use DistObsNet\Models\SettingsManager;
+use DistObsNet\Models\PublisherManager;
+use DistObsNet\Models\ObserverManager;
 //use DistObsNet\Models\DataManagerInterface;
 
 //use Silex\Provider\RoutingServiceProvider;
 //use Silex\Provider\ValidatorServiceProvider;
 //use Silex\Provider\ServiceControllerServiceProvider;
 //use Silex\Provider\HttpFragmentServiceProvider;
+
+\Symfony\Component\Debug\Debug::enable();
 
 $app = new Application();
 
@@ -59,6 +63,20 @@ $app['settings'] = function($app) {
     return $app['settingsManager']->create();
 };
 
-$app['publisher'] = null;
+$app['observerManager'] = $app->share(function($app) {
+    return new ObserverManager($app);
+});
+
+$app['observer'] = function($app) {
+    return $app['observerManager']->create();
+};
+
+$app['publisherManager'] = $app->share(function($app) {
+    return new PublisherManager($app);
+});
+
+$app['publisher'] = function($app) {
+    return $app['publisherManager']->create();
+};
 
 return $app;

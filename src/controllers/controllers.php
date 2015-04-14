@@ -16,8 +16,8 @@ $app->get('/', function() use ($app) {
 /* Settings */
 $app->get('/settings', 'controllers\\Settings::index')
     ->bind('settings');
-$app->get('/settings/initKeys', 'controllers\\Settings::initKeys')
-    ->bind('settings.initKeys');
+$app->get('/settings/initKey', 'controllers\\Settings::initKey')
+    ->bind('settings.initKey');
 $app->get('/settings/installDb', 'controllers\\Settings::installDb')
     ->bind('settings.installDb');
 $app->post('/settings/nodeUrl', 'controllers\\Settings::nodeUrl');

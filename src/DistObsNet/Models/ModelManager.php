@@ -10,7 +10,7 @@ class ModelManager implements ModelManagerInterface
     public function __construct(\Silex\Application $app)
     {
         $this->db = $app['db'];
-        $this->publisher = $app['publisher'];
+//        $this->publisher = $app['publisher'];
     }
 
     public function className()
@@ -39,6 +39,28 @@ class ModelManager implements ModelManagerInterface
         $model->isNew = false;
 
         return $model;
+    }
+
+    public function loadAll(Model $metaModel)
+    {
+        $sql = 'SELECT * FROM ' . $this->tableName();
+        $res = $this->db->fetchAll($sql);
+
+        if (! $res)
+            return false;
+
+        $models = [];
+        foreach($res as $row) {
+            $model = clone $metaModel;
+            foreach ($row as $key=>$value) {
+                if ( $model->hasAttribute($key) )
+                    $model->$key = $value;
+            }
+            $model->isNew = false;
+            $models[] = $model;
+        }
+
+        return $models;
     }
 
     public function save(ModelInterface $model)

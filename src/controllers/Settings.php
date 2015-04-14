@@ -3,40 +3,34 @@
 namespace controllers;
 
 use Silex\Application;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
+
+use DistObsNet\Console\CreateDBCommand;
+use DistObsNet\Console\CreateKeyCommand;
 
 class Settings
 {
     public function index(Request $request, Application $app)
     {
         $data = array();
+        $data['title'] = 'Settings';
         $data['publicKey'] = $app['key']->publicKey();
 
         try {
-            $data['isDbCreated'] = $app['settings']->load('isDbCreated');
+            $data['nodeName'] = $app['settings']->load('nodeName');
+            $data['nodeUrl'] = $app['settings']->load('nodeUrl');
+            $data['inviteNode'] = $app['settings']->load('inviteNode');
 
-            if ($data['nodeName'] = $app['settings']->load('nodeName'))
-                $data['nodeName'] = $data['nodeName']->value;
-
-            if ($data['nodeUrl'] = $app['settings']->load('nodeUrl')) {
-                $data['nodeUrl'] = $data['nodeUrl']->value;
-                $data['alterNodeUrl'] = $data['nodeUrl'];
-            } else {
-                $data['alterNodeUrl'] = substr (
-                        $request->server->get('REQUEST_SCHEME')
-                            . '://'
-                            . $request->server->get('HTTP_HOST')
-                            . $request->server->get('REQUEST_URI'),
-                        0,
-                        -8 //cut '/settings' suffix
-                );
-            }
+//            $data['observers'] = $app['observer']->loadAll();
+//            $data['publishers'] = $app['publisher']->loadAll();
 
         } catch (\Exception $e) {
-            $data['isDbCreated'] = false;
+            $data['nodeName'] = false;
         }
-
 
         return new Response($app['twig']->render(
                 'settings/index.twig',
@@ -45,14 +39,36 @@ class Settings
         );
     }
 
-    public function initKeys(Request $request, Application $app)
+    public function initKey(Request $request, Application $app)
     {
+        $command = new CreateKeyCommand;
+        $command->setContainer($app);
+
+        $input = new ArrayInput(array());
+        $output = new NullOutput;
+
+        $result = $command->run($input, $output);
+
         return $app->redirect($app['url_generator']->generate('settings'));
     }
 
     public function installDb(Request $request, Application $app)
     {
-        exec('../bin/console db:install');
+        $command = new CreateDBCommand;
+        $command->setContainer($app);
+
+        $url = substr (
+            $request->server->get('REQUEST_SCHEME')
+                . '://'
+                . $request->server->get('HTTP_HOST')
+                . $request->server->get('REQUEST_URI'),
+            0,
+            -(strlen('settings/installDb')) //cut '/settings' suffix
+        );
+        $input = new ArrayInput(array('url' => $url));
+        $output = new NullOutput;
+
+        $result = $command->run($input, $output);
 
         return $app->redirect($app['url_generator']->generate('settings'));
     }

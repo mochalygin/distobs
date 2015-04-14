@@ -2,16 +2,16 @@
 
 namespace DistObsNet\Models;
 
-class SettingsManager extends ModelManager
+class ObserverManager extends ModelManager
 {
     public function tableName()
     {
-        return 'settings';
+        return 'observer';
     }
 
     public function primaryKeyName()
     {
-        return 'code';
+        return 'node_id';
     }
 
     protected function isPublishable()

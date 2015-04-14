@@ -3,7 +3,18 @@
     <head>
         <title>{% block title '' %} - My Silex Application</title>
 
-        <link href="{{ asset('css/main.css') }}" rel="stylesheet" type="text/css" />
+        <!-- Compiled and minified jQuery v.1.11.2 -->
+        <script src="/jquery/jquery-1.11.2.min.js"></script>        
+        
+        <!-- Compiled and minified CSS v3.3.4 -->
+        <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+
+        <!-- Optional theme v3.3.4 -->
+        <link rel="stylesheet" href="/bootstrap/css/bootstrap-theme.min.css">
+
+        <!-- Compiled and minified JavaScript v3.3.4 -->
+        <script src="/bootstrap/js/bootstrap.min.js"></script>
+
     </head>
     <body>
         {% block content %}{% endblock %}

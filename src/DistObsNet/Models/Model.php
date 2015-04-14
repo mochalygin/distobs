@@ -32,11 +32,16 @@ class Model implements ModelInterface
             throw new ModelException('Wrong property name for set: ' . $prop);
     }
 
+    public function __isset($prop)
+    {
+        return in_array($prop, $this->attributesNames);
+    }
+
     public function __call($name, $arguments)
     {
         $prop = strtolower(substr($name, 3));
         if (! in_array($prop, $this->attributesNames))
-            throw new ModelException('Wrong property name for getProp()/setProp() method: ' . $name);
+            throw new ModelException('Wrong property name for getProp()/setProp() method: ' . $name . '(), prop "' . $prop . '"');
 
         if ('get' === substr($name, 0, 3)) {
             return $this->$prop;
@@ -72,6 +77,11 @@ class Model implements ModelInterface
     public function load($pk)
     {
         return $this->manager->load($pk, $this);
+    }
+
+    public function loadAll()
+    {
+        return $this->manager->loadAll($this);
     }
 
     public function hasAttribute($name)

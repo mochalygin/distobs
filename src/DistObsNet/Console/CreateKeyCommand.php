@@ -12,8 +12,8 @@ class CreateKeyCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('key')
-            ->setDescription('Creating private key')
+            ->setName('key:createNew')
+            ->setDescription('Create new key')
 //            ->addArgument(
 //                'name',
 //                InputArgument::OPTIONAL,
@@ -30,21 +30,8 @@ class CreateKeyCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-//        $name = $input->getArgument('name');
-//        if ($name) {
-//            $text = 'Hello '.$name;
-//        } else {
-//            $text = 'Hello';
-//        }
-//
-//        if ($input->getOption('yell')) {
-//            $text = strtoupper($text);
-//        }
-
-//        $output->writeln($text);
-
         $container = $this->getContainer();
-        $output->writeln('Public key: ' . $container['keyManager']->providePkey() . PHP_EOL);
+        $output->writeln('Private key: ' . $container['keyManager']->providePkey() . PHP_EOL);
         $container['monolog']->addInfo('Public key is: ' . $container['keyManager']->providePkey() . PHP_EOL);
     }
 

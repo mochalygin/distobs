@@ -1,15 +1,15 @@
-<div style="padding-top: 16px;">
-    My Node name:<b>
-        {% if nodeName %}
-            {{ nodeName }}
-        {% else %}
-            *undefined*
-        {% endif %}
-    </b>
-
-    <br>
-    <form action="/settings/nodeName" method="post">
-        <input type="text" name="nodeName" value="{{ nodeName }}">
-        <input type="submit" value="Save">
-    </form>
-</div>
+<form action="/settings/nodeName" method="post" class="form-group">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-12">
+                <label>My Node name:</label>
+            </div>
+            <div class="col-md-10">
+                <input name="nodeName" value="{{ nodeName.value }}" type="text" class="form-control" placeholder="Node name">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-default">Save</button>
+            </div>
+        </div>
+    </div>
+</form>

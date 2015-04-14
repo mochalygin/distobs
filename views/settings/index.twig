@@ -1,20 +1,62 @@
 {% extends "layout.twig" %}
 
 {% block content %}
-    Settings<br> 
-    {% if publicKey %}
-        {% include 'settings/keyInited.twig' %}
-    {% else %}
-        {% include 'settings/keyNeedInit.twig' %}
-    {% endif %}
-
-    <div style="border: 1px solid silver; margin-top: 8px;">
-        <b>Database</b><br>
-        {% if isDbCreated %}    
-            {% include 'settings/dbCreated.twig' %}
-        {% else %}
-            {% include 'settings/dbNeedToBeCreated.twig' %}
-        {% endif %}
-    </div>
     
+    <div class="col-md-12">
+
+        <h2>{{ title }}</h2>    
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Node key</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% if publicKey %}
+                            {% include 'settings/keyInited.twig' %}
+                        {% else %}
+                            {% include 'settings/keyNeedInit.twig' %}
+                        {% endif %}          
+                    </div>
+                </div>    
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">                    
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Customize your Node</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% if nodeName %}    
+                            {% include 'settings/dbCreated.twig' %}
+                        {% else %}
+                            {% include 'settings/dbNeedToBeCreated.twig' %}
+                        {% endif %}
+                    </div>
+                </div>    
+            </div>
+        </div>                
+                    
+        <div class="row">
+            <div class="col-md-6">                    
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Know Nodes</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% if inviteNode %}    
+                            {% include 'settings/myNodes.twig' %}
+                        {% else %}
+                            {% include 'settings/needInviteNode.twig' %}
+                        {% endif %}
+                    </div>
+                </div>    
+            </div>
+        </div>                                   
+
+    </div>
+        
 {% endblock %}

@@ -2,7 +2,7 @@
 
 namespace DistObsNet\Console;
 
-//use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 //use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,8 +31,13 @@ class CreateDBCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('db:install')
-            ->setDescription('Installing database');
+        ->setName('db:install')
+        ->setDescription('Installing database')
+        ->addArgument(
+            'url',
+            InputArgument::REQUIRED,
+            'URL'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -56,32 +61,34 @@ class CreateDBCommand extends ContainerAwareCommand
             exit(1);
         }
 
-        //выполняем sql табличек
-        $this->monolog()->addInfo('Executing SQL for tables...');
+        //выполняем sql создания табличек
         try {
             $sync = new SingleDatabaseSynchronizer($this->db());
             $sync->updateSchema($this->schema());
 
-            $this->monolog()->addInfo('Ok');
+            $this->monolog()->addInfo('Database created');
         } catch(\Exception $e) {
-            $this->monolog()->addError('Error (' . $e->getMessage() . ')');
-            exit(1);
+            $this->monolog()->addError('Database not created (' . $e->getMessage() . ')');
+            exit(1); //придумать что делать в случае ошибки
         }
 
-        //записываем флаг готовности БД
+        //записываем ...
         $container = $this->getContainer();
-        try {
-            $model = $container['settings'];
-            $model->code = 'isDbCreated';
-            $model->value = true;
-            $model->save();
+        $model = $container['settings'];
+        $model->code = 'nodeName';
+        $model->value = '***Just Created Node***';
+        if ( $model->save() )
+            $this->monolog()->addInfo('New Node name was saved');
+        else
+            $this->monolog()->error('Can\'t save new Node name');
 
-            $this->monolog()->addInfo('Ok');
-        } catch (\Exception $e) {
-            $this->monolog()->addError('Error (' . $e->getMessage() . ')');
-        }
-
-        $this->monolog()->addInfo('DB created succesfully');
+        $model = $container['settings'];
+        $model->code = 'nodeUrl';
+        $model->value = $input->getArgument('url');
+        if ( $model->save() )
+            $this->monolog()->addInfo('New Node url was saved');
+        else
+            $this->monolog()->error('Can\'t save new Node url');
     }
 
     protected function createTableNode()
@@ -127,8 +134,9 @@ class CreateDBCommand extends ContainerAwareCommand
         $table->addColumn('code', 'string', array('length' => 255));
         $table->addColumn('value', 'string', array('length' => 255));
 
-        $table->addColumn('st', 'boolean');
-        $table->addColumn('ts', 'integer');
+        //данные из этой таблицы нужно обрабатывать как-то по особенному. придумать как.
+//        $table->addColumn('st', 'boolean');
+//        $table->addColumn('ts', 'integer');
 
 
         $table->setPrimaryKey(array('code'));
@@ -167,7 +175,7 @@ class CreateDBCommand extends ContainerAwareCommand
         $table = $this->createTable('observer');
 
         $table->addColumn('node_id', 'integer');
-        $table->addColumn('date_sync', 'integer');
+//        $table->addColumn('date_sync', 'integer');
 
         $table->setPrimaryKey(array('node_id'));
     }
@@ -177,6 +185,7 @@ class CreateDBCommand extends ContainerAwareCommand
         $table = $this->createTable('publisher');
 
         $table->addColumn('node_id', 'integer');
+        $table->addColumn('date_sync', 'integer');
 
         $table->setPrimaryKey(array('node_id'));
     }
