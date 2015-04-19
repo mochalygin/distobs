@@ -84,6 +84,11 @@ class Model implements ModelInterface
         return $this->manager->loadAll($this);
     }
 
+    public function findBy(array $conditions, array $options = array())
+    {
+        return $this->manager->findBy($conditions, $this, $options);
+    }
+
     public function hasAttribute($name)
     {
         return in_array($name, $this->attributesNames());

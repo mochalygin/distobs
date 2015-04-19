@@ -71,6 +71,36 @@ class ModelManager implements ModelManagerInterface
             return $this->update($model);
     }
 
+    public function findBy(array $conditions, Model $metaModel, array $options = array())
+    {
+        if (! $conditions)
+            throw new ModelManagerException('No conditions was setted');
+
+        if ( $diff = array_diff(array_keys($conditions), $metaModel->attributesNames()) )
+            throw new ModelManagerException('Wrong list of parameters: ' . implode(',', ($diff)));
+
+        $sql = 'SELECT * FROM ' . $this->tableName() . ' WHERE ';
+        foreach ($conditions as $param => &$value)
+            $value = $param . ' = "?"';
+        $sql .= implode(' AND ', $conditions);
+
+        if (! empty($options['limit']))
+            $sql .= ' LIMIT ' . $options['limit'];
+
+        $res = $this->db->fetchAssoc($sql, $conditions);
+
+        if (! $res)
+            return false;
+
+        foreach ($res as $key=>$value) {
+            if ( $model->hasAttribute($key) )
+                $model->$key = $value;
+        }
+        $model->isNew = false;
+
+        return $model;
+    }
+
     public function primaryKeyName()
     {
         return 'id';

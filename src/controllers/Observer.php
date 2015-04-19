@@ -6,7 +6,7 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class Observer
+class Publisher
 {
     public function index(Request $request, Application $app)
     {

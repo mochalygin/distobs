@@ -11,6 +11,7 @@ use Symfony\Component\Console\Output\NullOutput;
 
 use DistObsNet\Console\CreateDBCommand;
 use DistObsNet\Console\CreateKeyCommand;
+use DistObsNet\Console\TouchNodeCommand;
 
 class Settings
 {
@@ -107,6 +108,24 @@ class Settings
             else
                 $app['monolog']->addError('Error while saving node name (' . $nodeName . ')');
         }
+
+        return $app->redirect($request->server->get('HTTP_REFERER'));
+    }
+
+    public function enterNetwork(Request $request, Application $app)
+    {
+        $app['monolog']->addInfo('Trying to enter Network...');
+
+        $enterNodeUrl = $request->request->get('nodeUrl');
+        $enterNodeKey = $request->request->get('nodeKey');
+
+        $command = new TouchNodeCommand();
+        $command->setContainer($app);
+
+        $input = new ArrayInput(array('key' => $enterNodeKey, 'url' => $enterNodeUrl));
+        $output = new NullOutput;
+
+        $result = $command->run($input, $output);
 
         return $app->redirect($request->server->get('HTTP_REFERER'));
     }

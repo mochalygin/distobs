@@ -22,8 +22,12 @@ $app->get('/settings/installDb', 'controllers\\Settings::installDb')
     ->bind('settings.installDb');
 $app->post('/settings/nodeUrl', 'controllers\\Settings::nodeUrl');
 $app->post('/settings/nodeName', 'controllers\\Settings::nodeName');
+$app->post('/settings/enterNetwork', 'controllers\\Settings::enterNetwork');
 
-/*   */
+/*_*/
+$app->get('/publisher/handshake', 'controllers\\Publisher::handshake');
+
+/*_*/
 $app->get('/observer', 'controllers\\Observer::index');
 
 /* Errors */
@@ -43,7 +47,7 @@ $app->error(function(\Exception $e, $code) use ($app) {
     return new Response($app['twig']->resolveTemplate($templates)->render(array('code' => $code)), $code);
 });
 
-$app->before(function (Request $request) use ($app) {
-    if (strpos($request->getRequestUri(), 'settings') === false)
-        return new RedirectResponse('settings');
-});
+//$app->before(function (Request $request) use ($app) {
+//    if (strpos($request->getRequestUri(), 'settings') === false)
+//        return new RedirectResponse('/settings');
+//});

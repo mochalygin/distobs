@@ -51,9 +51,13 @@ $app['publicKey'] = function() {
     return new \DistObsNet\Key\PublicKeyDummy();
 };
 
-$app['node'] = $app->share(function($app) {
+$app['nodeManager'] = $app->share(function($app) {
     return new NodeManager($app);
 });
+
+$app['node'] = function($app) {
+    return $app['nodeManager']->create();
+};
 
 $app['settingsManager'] = $app->share(function($app) {
     return new SettingsManager($app);
