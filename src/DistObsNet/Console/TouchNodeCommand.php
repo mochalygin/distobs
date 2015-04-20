@@ -45,10 +45,18 @@ class TouchNodeCommand extends ContainerAwareCommand
             return;
         }
 
-        $container['monolog']->info(json_encode($data));
-
         if ( !empty($data->result) && !empty($data->result->nodeName) ) {
             $container['monolog']->info('Getting name from new Node: ' . $data->result->nodeName);
+
+            $newNode = $container['node']->create();
+            $newNode->public_key = $enterNodeKey;
+            $newNode->url = $enterNodeUrl;
+            $newNode->name = $data->result->nodeName;
+
+            if (! $newNode->save())
+                $container['monolog']->error('Error while saving new touched Node');
+            else
+                $container['monolog']->info('New Node info was saved');
         }
     }
 }

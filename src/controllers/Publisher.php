@@ -29,16 +29,25 @@ class Publisher
         $node = $app['node']->findBy(array('public_key' => $nodeKey));
 
         if (! $node) {
-            $app['monolog']->info('This is new Node');
+            $app['monolog']->info('This is new Node Key');
 
             $nodeByUrl = $app['node']->findBy(array('url' => $nodeUrl));
             if ( $nodeByUrl )
                 $app['monolog']->warning('There was different Node at this URL');
-            else
-                $app['monolog']->info('This is new Node URL');
+            else {
+                $app['monolog']->info('This is new Node URL. Will touch it.');
+
+                $command = new TouchNodeCommand();
+                $command->setContainer($app);
+
+                $input = new ArrayInput(array('key' => $nodeKey, 'url' => $nodeUrl));
+                $output = new NullOutput;
+
+                $result = $command->run($input, $output);
+            }
         }
 
-        return new JsonResponse (array('result'=>array('nodeName' => $app['settings']->load('nodeName'))));
+        return new JsonResponse (array('result'=>array('nodeName' => $app['settings']->load('nodeName')->value)));
     }
 
 }
