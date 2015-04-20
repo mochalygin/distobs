@@ -35,7 +35,7 @@ class Publisher
             if ( $nodeByUrl )
                 $app['monolog']->warning('There was different Node at this URL');
             else
-                $app['monolog']->info('This in new Node URL');
+                $app['monolog']->info('This is new Node URL');
         }
 
         return new JsonResponse (array('result'=>array('nodeName' => $app['settings']->load('nodeName'))));
