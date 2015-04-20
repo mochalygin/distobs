@@ -44,5 +44,11 @@ class TouchNodeCommand extends ContainerAwareCommand
             $container['monolog']->error('Incorrect answer from Node');
             return;
         }
+
+        $container['monolog']->info(json_encode($data));
+
+        if ( !empty($data->result) && !empty($data->result->nodeName) ) {
+            $container['monolog']->info('Getting name from new Node: ' . $data->result->nodeName);
+        }
     }
 }

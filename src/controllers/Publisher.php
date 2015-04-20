@@ -26,13 +26,19 @@ class Publisher
             return new JsonResponse (array('error'=>array('msg' => 'Bad URL or Key')));
         }
 
-        $node = $app['node']->findBy(['public_key' => $nodeKey]);
+        $node = $app['node']->findBy(array('public_key' => $nodeKey));
 
         if (! $node) {
+            $app['monolog']->info('This is new Node');
 
+            $nodeByUrl = $app['node']->findBy(array('url' => $nodeUrl));
+            if ( $nodeByUrl )
+                $app['monolog']->warning('There was different Node at this URL');
+            else
+                $app['monolog']->info('This in new Node URL');
         }
 
-        return new JsonResponse (array('result'=>array('nodeKey' => $app['key']->publicKey())));
+        return new JsonResponse (array('result'=>array('nodeName' => $app['settings']->load('nodeName'))));
     }
 
 }

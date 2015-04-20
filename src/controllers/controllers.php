@@ -25,6 +25,7 @@ $app->post('/settings/nodeName', 'controllers\\Settings::nodeName');
 $app->post('/settings/enterNetwork', 'controllers\\Settings::enterNetwork');
 
 /*_*/
+$app->get('/publisher', 'controllers\\Publisher::index');
 $app->get('/publisher/handshake', 'controllers\\Publisher::handshake');
 
 /*_*/
