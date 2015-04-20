@@ -40,22 +40,24 @@
             </div>
         </div>                
                     
-        <div class="row">
-            <div class="col-md-6">                    
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Know Nodes</h3>
-                    </div>
-                    <div class="panel-body">
-                        {% if inviteNode %}    
-                            {% include 'settings/myNodes.twig' %}
-                        {% else %}
-                            {% include 'settings/needInviteNode.twig' %}
-                        {% endif %}
-                    </div>
-                </div>    
-            </div>
-        </div>                                   
+        {% if nodeName %}
+            <div class="row">
+                <div class="col-md-6">                    
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Know Nodes</h3>
+                        </div>
+                        <div class="panel-body">
+                            {% if inviteNode %}    
+                                {% include 'settings/myNodes.twig' %}
+                            {% else %}
+                                {% include 'settings/needInviteNode.twig' %}
+                            {% endif %}
+                        </div>
+                    </div>    
+                </div>
+            </div>                                   
+        {% endif %}
 
     </div>
         
